@@ -6,7 +6,11 @@
 package GUI;
 
 import Procesamiento.Mapa;
+import java.awt.Component;
 import java.awt.GridLayout;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 /**
@@ -14,7 +18,8 @@ import javax.swing.JLabel;
  * @author Luis
  */
 public class Principal extends javax.swing.JFrame {
-
+    Mapa m;
+    JLabel[][] pos;
     /**
      * Creates new form Principal
      */
@@ -33,6 +38,8 @@ public class Principal extends javax.swing.JFrame {
 
         panel = new javax.swing.JPanel();
         btnAct = new javax.swing.JButton();
+        cbEditar = new javax.swing.JCheckBox();
+        btnGuardar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -61,6 +68,21 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        cbEditar.setText("Editar");
+        cbEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbEditarActionPerformed(evt);
+            }
+        });
+
+        btnGuardar.setText("Guardar");
+        btnGuardar.setEnabled(false);
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -69,33 +91,59 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 503, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cbEditar)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnGuardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
                         .addComponent(btnAct)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(btnAct)
-                .addGap(28, 28, 28)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbEditar)
+                    .addComponent(btnGuardar)
+                    .addComponent(btnAct))
+                .addGap(31, 31, 31)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActActionPerformed
-        Mapa m = new Mapa("filename.txt");
+        m = new Mapa("filename.txt");
         panel.removeAll();
-        JLabel[][] pos = m.cargarMapa(panel);
+        pos = m.cargarMapa(panel);
     }//GEN-LAST:event_btnActActionPerformed
 
     private void panelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelMouseClicked
-        
+
     }//GEN-LAST:event_panelMouseClicked
+
+    private void cbEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbEditarActionPerformed
+        btnGuardar.setEnabled(true);
+        cbEditar.setEnabled(false);
+        btnAct.setEnabled(false);
+        m.setEdit(1);
+    }//GEN-LAST:event_cbEditarActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        btnGuardar.setEnabled(false);
+        cbEditar.setSelected(false);
+        cbEditar.setEnabled(true);
+        btnAct.setEnabled(true);
+        try {
+            m.guardarMapa(panel);
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        btnAct.doClick();
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -134,6 +182,8 @@ public class Principal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAct;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JCheckBox cbEditar;
     private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 }

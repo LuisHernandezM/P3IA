@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Archivo{
-    private int filas=0;
-    private int col=1;
+    private int filas=1;
+    private int col=0;
     private int aux=0;
     
     // Constructor
@@ -20,7 +20,7 @@ public class Archivo{
     public ArrayList<ArrayList <Integer>> leerArchivo(String direccion){
         direccion="filename.txt"; //Lee el archivo desde la raiz del proyecto
         ArrayList<ArrayList <Integer>>mapa = new ArrayList<ArrayList<Integer>>(); //servira para guardar los datos del terreno 
-        ArrayList<Integer> linea = new ArrayList<Integer>();    //ArrayList auxiliar;
+        mapa.add(new ArrayList<Integer>());
         try{
             FileReader fr=new FileReader(direccion); //Crea el buffer para el archivo
             int terreno= fr.read(); 
@@ -35,23 +35,30 @@ public class Archivo{
                 !Si importan los saltos de linea!!!
                 */
                 if((char)terreno=='0' || (char)terreno=='1'|| (char)terreno=='2'|| (char)terreno=='3'|| (char)terreno=='4'){
-                    linea.add((char)terreno-'0');
-                    System.out.print((int)terreno-'0');
+                    //System.out.print((int)terreno-'0');
+                    mapa.get(filas-1).add((int)terreno-'0');
                     if(aux==0){
-                        filas++;
+                        col++;
                     }  
                 }else if((char)terreno=='\n'){
-                    System.out.print("\n");
+                    //System.out.print("\n");
                     aux=1;
-                    col++;
-                    mapa.add(linea);
-                    linea.clear();
+                    filas++;
+                    mapa.add(new ArrayList<Integer>());
                 }
                 terreno=fr.read();
             }
-            mapa.add(linea);
-            System.out.print("\n");
-            System.out.print("\n");
+            //System.out.print("\n");
+            //System.out.print("\n");
+            /*
+            for (int i=0; i<filas; i++){
+                for (int j=0; j<col; j++){
+                    System.out.print(mapa.get(i).get(j));
+                }
+                System.out.println();
+            }
+            */
+            //mapa.remove(filas);
             fr.close();
         }catch(IOException e){
             System.out.println("Error en la lectura del archivo");
@@ -71,6 +78,7 @@ public class Archivo{
                     fw.append("\n");
                 }
             }
+            fw.close();
         }catch(IOException e){
             System.out.println("Error en la escritura del archivo");
         }
