@@ -6,6 +6,7 @@
 package Procesamiento;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -92,6 +93,25 @@ public class Mapa {
         int c=-1;
         JLabel jl = new JLabel();
         int i=0; int j=0;
+        //map.clear();
+        //map.add(new ArrayList<Integer>());
+        for (Component jc: mapa.getComponents()){
+            if (jc instanceof JLabel){
+                if (j==col){
+                    ++i;
+                    j=0;
+                    //map.add(new ArrayList<Integer>());
+                }
+                for (int color=0; color<background.length; color++){
+                    if (jc.getBackground()==background[color]){
+                        c=color;
+                    }
+                }
+                map.get(i).set(j, c);
+                ++j;
+            }
+        }
+        /*
         for (int aux=0; aux<filas*col-1; aux++){
             if (j==col){
                 j = 0;
@@ -105,7 +125,8 @@ public class Mapa {
             }
             map.get(i).set(j, c);
         }
-        
+        */
         ar.guardarArchivo(map, "filename.txt");
+        mapa.updateUI();
     }
 }

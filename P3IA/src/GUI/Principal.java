@@ -25,6 +25,7 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() {
         initComponents();
+        btnAct.doClick();
     }
 
     /**
@@ -133,15 +134,19 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_cbEditarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        btnGuardar.setEnabled(false);
-        cbEditar.setSelected(false);
-        cbEditar.setEnabled(true);
-        btnAct.setEnabled(true);
         try {
             m.guardarMapa(panel);
         } catch (IOException ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
+        pos = m.cargarMapa(panel);
+        
+        btnGuardar.setEnabled(false);
+        cbEditar.setSelected(false);
+        cbEditar.setEnabled(true);
+        btnAct.setEnabled(true);
+        
+        panel.updateUI();
         btnAct.doClick();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
