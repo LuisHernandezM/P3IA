@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import Procesamiento.AEstrella;
 import Procesamiento.Mapa;
 import Procesamiento.Personaje;
 import Procesamiento.Punto;
@@ -211,7 +212,9 @@ public class Principal extends javax.swing.JFrame {
     private void btnResolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResolverActionPerformed
         inicioFin();
         setPersonaje(cbLista.getSelectedItem().toString());
-        aEstrella(p);
+        AEstrella algoritmo = new AEstrella(ini,fin,p,m,txtPuntos,spArbol,panel);
+        algoritmo.start();
+        //algoritmo.run();
     }//GEN-LAST:event_btnResolverActionPerformed
 
     public void inicioFin(){
@@ -236,142 +239,6 @@ public class Principal extends javax.swing.JFrame {
                 ++j;
             }
         }
-    }
-    
-    public void aEstrella(Personaje pers){
-        ArrayList<Punto> open = new ArrayList<Punto>();
-        ArrayList<Punto> closed = new ArrayList<Punto>();
-        open.add(ini);
-        Punto pt=new Punto();
-        DefaultMutableTreeNode dm = new DefaultMutableTreeNode("Camino:");
-        boolean bandera = true;
-        while(bandera){
-            int index = min(open);
-            pt = open.get(index);
-            open.remove(index);
-            JLabel jl = m.getEtiqueta(pt.y, pt.x, panel);
-            if(jl.getText().contains(" ")){
-                jl.setText(jl.getText().replace(" ", "o"));
-            }else if(jl.getText().contains("o")){
-                // Do nothing
-            }else{
-                jl.setText(jl.getText()+"o");
-            }
-            panel.updateUI();
-            p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(pt.y).get(pt.x)));
-            txtPuntos.setText(p.getPuntos()+"");
-            DefaultMutableTreeNode padre=new DefaultMutableTreeNode();
-            DefaultMutableTreeNode aux = arbolSearch(dm,new DefaultMutableTreeNode(pt.x+","+pt.y).getUserObject().toString());
-            if (aux!=null){
-                padre=aux;
-            }else{
-                padre=new DefaultMutableTreeNode(pt.x+","+pt.y);
-                dm.add(padre);
-            }
-            // Arriba
-            if (pt.y>0){
-                Punto up = new Punto(pt.x,pt.y-1);
-                if (p.validar(m.getMap().get(up.y).get(up.x))==true){
-                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(up.x+","+up.y);
-                    padre.add(hijo);
-                    up.setF(p.getCostoOf(m.getMap().get(up.y).get(up.x))+distancia(up));
-                    if (up.x == fin.x && up.y == fin.y){
-                        bandera=false;
-                        closed.add(up);
-                    }else if(search(open,up)!=-1 || search(closed,up)!=-1){
-                        // Do Nothing/Add Sentences
-                    }else{
-                        open.add(up);
-                    }
-                }
-            }
-            // Abajo
-            if (pt.y<m.getMap().size()-1){
-                Punto down = new Punto(pt.x,pt.y+1);
-                if (p.validar(m.getMap().get(down.y).get(down.x))==true){
-                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(down.x+","+down.y);
-                    padre.add(hijo);
-                    down.setF(p.getCostoOf(m.getMap().get(down.y).get(down.x))+distancia(down));
-                    if (down.x == fin.x && down.y == fin.y){
-                        bandera=false;
-                        closed.add(down);
-                    }else if(search(open,down)!=-1 || search(closed,down)!=-1){
-                        // Do Nothing
-                    }else{
-                        open.add(down);
-                    }
-                }
-            }
-            // Derecha
-            if (pt.x<m.getMap().get(0).size()-1){
-                Punto right = new Punto(pt.x+1,pt.y);
-                if (p.validar(m.getMap().get(right.y).get(right.x))==true){
-                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(right.x+","+right.y);
-                    padre.add(hijo);
-                    right.setF(p.getCostoOf(m.getMap().get(right.y).get(right.x))+distancia(right));
-                    if (right.x == fin.x && right.y == fin.y){
-                        bandera=false;
-                        closed.add(right);
-                    }else if(search(open,right)!=-1 || search(closed,right)!=-1){
-                        // Do Nothing
-                    }else{
-                        open.add(right);
-                    }
-                }
-            }
-            // Izquierda
-            if (pt.x>0){
-                Punto left = new Punto(pt.x-1,pt.y);
-                if (p.validar(m.getMap().get(left.y).get(left.x))==true){
-                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(left.x+","+left.y);
-                    padre.add(hijo);
-                    left.setF(p.getCostoOf(m.getMap().get(left.y).get(left.x))+distancia(left));
-                    if (left.x == fin.x && left.y == fin.y){
-                        bandera=false;
-                        closed.add(left);
-                    }else if(search(open,left)!=-1 || search(closed,left)!=-1){
-                        // Do Nothing
-                    }else{
-                        open.add(left);
-                    }
-                }
-            }
-            closed.add(pt);
-            spArbol.removeAll();
-            JTree arbol = new JTree(dm);
-            spArbol.add(arbol);
-        }
-        p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(pt.y).get(pt.x)));
-        txtPuntos.setText(p.getPuntos()+"");
-        // Camino optimo
-        /*DefaultMutableTreeNode lastNode = arbolSearch(dm,fin.x+","+fin.y);
-        Enumeration e = lastNode.pathFromAncestorEnumeration(dm);
-        while(e.hasMoreElements()){
-            DefaultMutableTreeNode d = (DefaultMutableTreeNode)e.nextElement();
-            String aux = d.getUserObject().toString();
-            if (aux == "Camino:"){
-                // Do Nothing
-            }else{
-                int i=aux.indexOf(",");
-                int x = Integer.parseInt(aux.substring(0, i-1));
-                int y = Integer.parseInt(aux.substring(i+1, aux.length()-1));
-                JLabel jl = m.getEtiqueta(y, x, panel);
-                jl.setText(jl.getText().replace("o", "x"));
-                panel.updateUI();
-            }
-        }*/
-    }
-    
-    public int min(ArrayList<Punto> al){
-        int indice=-1;
-        int minimo=999999999;
-        for (int i=0; i<al.size();i++){
-            if (al.get(i).getF()<minimo){
-                minimo=al.get(i).getF();
-                indice=i;
-            }
-        }
-        return indice;
     }
     
     public void setPersonaje(String nombre){
@@ -411,33 +278,6 @@ public class Principal extends javax.swing.JFrame {
         }else{
             JOptionPane.showMessageDialog(null, "Selecciona un Personaje");
         }
-    }
-    
-    public int distancia(Punto act){
-        return Math.abs(act.x-fin.x)+Math.abs(act.y+fin.y);
-    }
-    
-    public int search(ArrayList<Punto> lista, Punto p){
-        int index = -1;
-        for (int i=0; i<lista.size(); i++){
-            if(lista.get(i).x==p.x && lista.get(i).y==p.y){
-                index=i;
-            }
-        }
-        return index;
-    }
-    
-    public DefaultMutableTreeNode arbolSearch(DefaultMutableTreeNode arbol, String search){
-        //int index = -1;
-        DefaultMutableTreeNode nodo;
-        Enumeration e = arbol.breadthFirstEnumeration();
-        while(e.hasMoreElements()){
-            nodo = (DefaultMutableTreeNode) e.nextElement();
-            if (search.equals(nodo.getUserObject().toString())){
-                return nodo;
-            }
-        }
-        return null;
     }
 
     /**
