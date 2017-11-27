@@ -6,12 +6,21 @@
 package GUI;
 
 import Procesamiento.Mapa;
+import Procesamiento.Personaje;
+import Procesamiento.Punto;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -20,6 +29,9 @@ import javax.swing.JLabel;
 public class Principal extends javax.swing.JFrame {
     Mapa m;
     JLabel[][] pos;
+    Punto ini=new Punto();
+    Punto fin=new Punto();
+    Personaje p;
     /**
      * Creates new form Principal
      */
@@ -41,6 +53,12 @@ public class Principal extends javax.swing.JFrame {
         btnAct = new javax.swing.JButton();
         cbEditar = new javax.swing.JCheckBox();
         btnGuardar = new javax.swing.JButton();
+        btnResolver = new javax.swing.JButton();
+        spArbol = new java.awt.ScrollPane();
+        jLabel1 = new javax.swing.JLabel();
+        txtPuntos = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        cbLista = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,7 +80,7 @@ public class Principal extends javax.swing.JFrame {
             .addGap(0, 373, Short.MAX_VALUE)
         );
 
-        btnAct.setText("Actualizar");
+        btnAct.setText("Recargar");
         btnAct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnActActionPerformed(evt);
@@ -84,33 +102,73 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        btnResolver.setText("Resolver con A*");
+        btnResolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResolverActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Puntos:");
+
+        txtPuntos.setEditable(false);
+
+        jLabel2.setText("Personaje:");
+
+        cbLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona un personaje", "Humano", "Mono", "Pulpo", "Sasquatch" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(cbEditar)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
-                        .addComponent(btnAct)))
-                .addContainerGap())
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(cbLista, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnResolver, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cbEditar)
+                                .addGap(37, 37, 37)
+                                .addComponent(btnGuardar)
+                                .addGap(82, 82, 82)
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtPuntos, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 30, Short.MAX_VALUE))
+                            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(spArbol, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(btnAct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(19, 19, 19))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbEditar)
+                    .addComponent(btnAct)
                     .addComponent(btnGuardar)
-                    .addComponent(btnAct))
-                .addGap(31, 31, 31)
-                .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
+                    .addComponent(cbEditar)
+                    .addComponent(jLabel1)
+                    .addComponent(txtPuntos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(spArbol, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnResolver)
+                    .addComponent(jLabel2)
+                    .addComponent(cbLista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -150,6 +208,238 @@ public class Principal extends javax.swing.JFrame {
         btnAct.doClick();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    private void btnResolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResolverActionPerformed
+        inicioFin();
+        setPersonaje(cbLista.getSelectedItem().toString());
+        aEstrella(p);
+    }//GEN-LAST:event_btnResolverActionPerformed
+
+    public void inicioFin(){
+        int col=m.getAr().getCol();
+        int filas = m.getAr().getFilas();
+        int i=0;  int j=0;
+        for (Component jc: panel.getComponents()){
+            if (jc instanceof JLabel){
+                if (j==col){
+                    ++i;
+                    j=0;
+                }
+                if (((JLabel) jc).getText()=="F"){
+                    fin.x=j;
+                    fin.y=i;
+                }else if (((JLabel) jc).getText()=="Io"){
+                    ini.x=j;
+                    ini.y=i;
+                }else{
+                    // Nothing
+                }
+                ++j;
+            }
+        }
+    }
+    
+    public void aEstrella(Personaje pers){
+        ArrayList<Punto> open = new ArrayList<Punto>();
+        ArrayList<Punto> closed = new ArrayList<Punto>();
+        open.add(ini);
+        Punto pt=new Punto();
+        DefaultMutableTreeNode dm = new DefaultMutableTreeNode("Camino:");
+        boolean bandera = true;
+        while(bandera){
+            int index = min(open);
+            pt = open.get(index);
+            open.remove(index);
+            JLabel jl = m.getEtiqueta(pt.y, pt.x, panel);
+            if(jl.getText().contains(" ")){
+                jl.setText(jl.getText().replace(" ", "o"));
+            }else if(jl.getText().contains("o")){
+                // Do nothing
+            }else{
+                jl.setText(jl.getText()+"o");
+            }
+            panel.updateUI();
+            p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(pt.y).get(pt.x)));
+            txtPuntos.setText(p.getPuntos()+"");
+            DefaultMutableTreeNode padre=new DefaultMutableTreeNode();
+            DefaultMutableTreeNode aux = arbolSearch(dm,new DefaultMutableTreeNode(pt.x+","+pt.y).getUserObject().toString());
+            if (aux!=null){
+                padre=aux;
+            }else{
+                padre=new DefaultMutableTreeNode(pt.x+","+pt.y);
+                dm.add(padre);
+            }
+            // Arriba
+            if (pt.y>0){
+                Punto up = new Punto(pt.x,pt.y-1);
+                if (p.validar(m.getMap().get(up.y).get(up.x))==true){
+                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(up.x+","+up.y);
+                    padre.add(hijo);
+                    up.setF(p.getCostoOf(m.getMap().get(up.y).get(up.x))+distancia(up));
+                    if (up.x == fin.x && up.y == fin.y){
+                        bandera=false;
+                        closed.add(up);
+                    }else if(search(open,up)!=-1 || search(closed,up)!=-1){
+                        // Do Nothing/Add Sentences
+                    }else{
+                        open.add(up);
+                    }
+                }
+            }
+            // Abajo
+            if (pt.y<m.getMap().size()-1){
+                Punto down = new Punto(pt.x,pt.y+1);
+                if (p.validar(m.getMap().get(down.y).get(down.x))==true){
+                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(down.x+","+down.y);
+                    padre.add(hijo);
+                    down.setF(p.getCostoOf(m.getMap().get(down.y).get(down.x))+distancia(down));
+                    if (down.x == fin.x && down.y == fin.y){
+                        bandera=false;
+                        closed.add(down);
+                    }else if(search(open,down)!=-1 || search(closed,down)!=-1){
+                        // Do Nothing
+                    }else{
+                        open.add(down);
+                    }
+                }
+            }
+            // Derecha
+            if (pt.x<m.getMap().get(0).size()-1){
+                Punto right = new Punto(pt.x+1,pt.y);
+                if (p.validar(m.getMap().get(right.y).get(right.x))==true){
+                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(right.x+","+right.y);
+                    padre.add(hijo);
+                    right.setF(p.getCostoOf(m.getMap().get(right.y).get(right.x))+distancia(right));
+                    if (right.x == fin.x && right.y == fin.y){
+                        bandera=false;
+                        closed.add(right);
+                    }else if(search(open,right)!=-1 || search(closed,right)!=-1){
+                        // Do Nothing
+                    }else{
+                        open.add(right);
+                    }
+                }
+            }
+            // Izquierda
+            if (pt.x>0){
+                Punto left = new Punto(pt.x-1,pt.y);
+                if (p.validar(m.getMap().get(left.y).get(left.x))==true){
+                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(left.x+","+left.y);
+                    padre.add(hijo);
+                    left.setF(p.getCostoOf(m.getMap().get(left.y).get(left.x))+distancia(left));
+                    if (left.x == fin.x && left.y == fin.y){
+                        bandera=false;
+                        closed.add(left);
+                    }else if(search(open,left)!=-1 || search(closed,left)!=-1){
+                        // Do Nothing
+                    }else{
+                        open.add(left);
+                    }
+                }
+            }
+            closed.add(pt);
+            spArbol.removeAll();
+            JTree arbol = new JTree(dm);
+            spArbol.add(arbol);
+        }
+        p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(pt.y).get(pt.x)));
+        txtPuntos.setText(p.getPuntos()+"");
+        // Camino optimo
+        /*DefaultMutableTreeNode lastNode = arbolSearch(dm,fin.x+","+fin.y);
+        Enumeration e = lastNode.pathFromAncestorEnumeration(dm);
+        while(e.hasMoreElements()){
+            DefaultMutableTreeNode d = (DefaultMutableTreeNode)e.nextElement();
+            String aux = d.getUserObject().toString();
+            if (aux == "Camino:"){
+                // Do Nothing
+            }else{
+                int i=aux.indexOf(",");
+                int x = Integer.parseInt(aux.substring(0, i-1));
+                int y = Integer.parseInt(aux.substring(i+1, aux.length()-1));
+                JLabel jl = m.getEtiqueta(y, x, panel);
+                jl.setText(jl.getText().replace("o", "x"));
+                panel.updateUI();
+            }
+        }*/
+    }
+    
+    public int min(ArrayList<Punto> al){
+        int indice=-1;
+        int minimo=999999999;
+        for (int i=0; i<al.size();i++){
+            if (al.get(i).getF()<minimo){
+                minimo=al.get(i).getF();
+                indice=i;
+            }
+        }
+        return indice;
+    }
+    
+    public void setPersonaje(String nombre){
+        int[] costos=new int[5];
+        if (nombre=="Humano"){
+            costos[0]=1000000;  // Costo Mountain
+            costos[1]=1;        // Costo Land
+            costos[2]=2;        // Costo Water
+            costos[3]=3;        // Costo Sand
+            costos[4]=4;        // Costo Forest
+            p = new Personaje(costos); 
+            txtPuntos.setText(p.getPuntos()+"");//Textbox del puntaje
+        }else if (nombre=="Mono"){
+            costos[0]=1000000;
+            costos[1]=2;
+            costos[2]=4;
+            costos[3]=3;
+            costos[4]=1;
+            p = new Personaje(costos); 
+            txtPuntos.setText(p.getPuntos()+"");
+        }else if (nombre=="Pulpo"){
+            costos[0]=1000000;
+            costos[1]=2;
+            costos[2]=1;
+            costos[3]=1000000;
+            costos[4]=3;
+            p = new Personaje(costos); 
+            txtPuntos.setText(p.getPuntos()+"");
+        }else if (nombre=="Sasquatch"){
+            costos[0]=15;
+            costos[1]=4;
+            costos[2]=1000000;
+            costos[3]=1000000;
+            costos[4]=4;
+            p = new Personaje(costos); 
+            txtPuntos.setText(p.getPuntos()+"");
+        }else{
+            JOptionPane.showMessageDialog(null, "Selecciona un Personaje");
+        }
+    }
+    
+    public int distancia(Punto act){
+        return Math.abs(act.x-fin.x)+Math.abs(act.y+fin.y);
+    }
+    
+    public int search(ArrayList<Punto> lista, Punto p){
+        int index = -1;
+        for (int i=0; i<lista.size(); i++){
+            if(lista.get(i).x==p.x && lista.get(i).y==p.y){
+                index=i;
+            }
+        }
+        return index;
+    }
+    
+    public DefaultMutableTreeNode arbolSearch(DefaultMutableTreeNode arbol, String search){
+        //int index = -1;
+        DefaultMutableTreeNode nodo;
+        Enumeration e = arbol.breadthFirstEnumeration();
+        while(e.hasMoreElements()){
+            nodo = (DefaultMutableTreeNode) e.nextElement();
+            if (search.equals(nodo.getUserObject().toString())){
+                return nodo;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -188,7 +478,13 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAct;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnResolver;
     private javax.swing.JCheckBox cbEditar;
+    private javax.swing.JComboBox<String> cbLista;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel panel;
+    private java.awt.ScrollPane spArbol;
+    private javax.swing.JTextField txtPuntos;
     // End of variables declaration//GEN-END:variables
 }

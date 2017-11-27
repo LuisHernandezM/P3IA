@@ -7,6 +7,7 @@ package Procesamiento;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -27,10 +28,23 @@ public class Mapa {
     private ArrayList<ArrayList<Integer>> map = new ArrayList<ArrayList<Integer>>();
     private final String[] terreno={"Montaña","Tierra","Agua","Arena","Bosque"};
     private final Color[] background={new Color(77,58,58),new Color(250,191,143),new Color(0,175,255),Color.yellow,new Color(150,210,80)};
+    boolean ini;
+    boolean fin;
+
+    public ArrayList<ArrayList<Integer>> getMap() {
+        return map;
+    }
+
+    public Archivo getAr() {
+        return ar;
+    }
+
+    public void setAr(Archivo ar) {
+        this.ar = ar;
+    }
     
     public Mapa(String dir){
         map = ar.leerArchivo(dir);
-        
     }
 
     public int getEdit() {
@@ -45,6 +59,8 @@ public class Mapa {
         int filas = ar.getFilas();
         int col = ar.getCol();
         int con;
+        ini=false;
+        fin=false;
         mapa.setLayout(new GridLayout(filas,col));
         JLabel[][] grid = new JLabel[filas][col];
         for (int i=0; i<filas; i++){
@@ -56,13 +72,14 @@ public class Mapa {
                 grid[i][j].setToolTipText(terreno[con]);
                 grid[i][j].setBackground(background[con]);
                 grid[i][j].setOpaque(true);
+                grid[i][j].setFont(new Font("Courier New",Font.PLAIN,21));
                 grid[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(java.awt.event.MouseEvent evt){
+                        JLabel jl = new JLabel();
+                        jl = (JLabel) evt.getSource();
                         if (edit==1){
                             int indice=-1;
-                            JLabel jl = new JLabel();
-                            jl = (JLabel) evt.getSource();
                             for (int i=0;i<background.length;i++){
                                 if (jl.getBackground()==background[i]){
                                     indice=i;
@@ -76,7 +93,14 @@ public class Mapa {
                             jl.setBackground(background[indice]);
                             jl.setToolTipText(terreno[indice]);
                             mapa.updateUI();
+                        } else if (fin==false && evt.isMetaDown()==true){
+                            jl.setText("F");
+                            fin = true;
+                        }else if(ini==false && evt.isMetaDown()==false){
+                            jl.setText("Io");
+                            ini = true;
                         }
+                        
                     }
                 });
                 mapa.add(grid[i][j]);
@@ -111,22 +135,28 @@ public class Mapa {
                 ++j;
             }
         }
-        /*
-        for (int aux=0; aux<filas*col-1; aux++){
-            if (j==col){
-                j = 0;
-                i++;
-            }
-            jl = (JLabel) mapa.getComponent(aux);
-            for (int color=0; color<background.length; color++){
-                if (jl.getBackground()==background[color]){
-                    c=color;
-                }
-            }
-            map.get(i).set(j, c);
-        }
-        */
         ar.guardarArchivo(map, "filename.txt");
         mapa.updateUI();
     }
+    
+    public JLabel getEtiqueta(int fila, int columna, JPanel mapa){
+        int col=ar.getCol();
+        JLabel jl = new JLabel();
+        int i=0; int j=0;
+        for (Component jc: mapa.getComponents()){
+            if (jc instanceof JLabel){
+                if (j==col){
+                    ++i;
+                    j=0;
+                }
+                if (j==columna && i==fila){
+                    jl = (JLabel) jc;
+                    return jl;
+                }
+                ++j;
+            }
+        }
+        return null;
+    }
 }
+
