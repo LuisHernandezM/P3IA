@@ -11,6 +11,11 @@ public class Archivo{
     private int col=0;
     private int aux=0;
     
+    /*
+    ****************************************************************************
+            PORT DE LA VERSION ANTERIOR PERO CON PEQUEÑOS CAMBIOS
+    ****************************************************************************
+    */
     // Constructor
     public Archivo(){
     
@@ -31,8 +36,7 @@ public class Archivo{
                    Formato del archivo: 1,0,2,3,1,0,3
                                         2,2,4,0,3,1,1
                 
-                Pero creo no importa si no pones comas y lo pones asi: 140231410
-                !Si importan los saltos de linea!!!
+                Nota: no importan las comas pero si los saltos de linea!!!
                 */
                 if((char)terreno=='0' || (char)terreno=='1'|| (char)terreno=='2'|| (char)terreno=='3'|| (char)terreno=='4'){
                     //System.out.print((int)terreno-'0');
@@ -48,17 +52,7 @@ public class Archivo{
                 }
                 terreno=fr.read();
             }
-            //System.out.print("\n");
-            //System.out.print("\n");
-            /*
-            for (int i=0; i<filas; i++){
-                for (int j=0; j<col; j++){
-                    System.out.print(mapa.get(i).get(j));
-                }
-                System.out.println();
-            }
-            */
-            //mapa.remove(filas);
+            
             fr.close();
         }catch(IOException e){
             System.out.println("Error en la lectura del archivo");
@@ -66,6 +60,9 @@ public class Archivo{
         return mapa;
     }
     
+    /*
+        Metodo para guardar el mapa en un archivo de texto
+    */
     public void guardarArchivo(ArrayList<ArrayList<Integer>> mapa, String direccion) throws IOException{
         try{
             FileWriter fw = new FileWriter(direccion);

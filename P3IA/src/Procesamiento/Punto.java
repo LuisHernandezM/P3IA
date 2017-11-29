@@ -9,6 +9,11 @@ package Procesamiento;
  *
  * @author Luis
  */
+
+/*
+Clase para representar un punto en el mapa, adicionalmente tiene el costo del 
+movimiento (f) con la cual el algoritmo puede dar prioridad a ese punto.
+*/
 public class Punto {
     public int x;
     public int y;

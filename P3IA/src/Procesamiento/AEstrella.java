@@ -22,6 +22,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
  *
  * @author Luis Hernandez
  */
+
+/*
+Clase que ejecuta el algoritmo de estrella, se encuentra como un hilo para poder 
+mostrar paso a paso como se va resolviendo el laberinto
+*/
 public class AEstrella extends Thread{
     Punto ini;
     Punto fin;
@@ -46,17 +51,21 @@ public class AEstrella extends Thread{
         this.panel=panel;
         open = new ArrayList<Punto>();
         closed = new ArrayList<Punto>();
-        open.add(ini);
+        open.add(ini);  // Agrega el nodo inicial al conjunto de nodos abiertos
         pt=new Punto();
-        dm = new DefaultMutableTreeNode("Camino:");
+        dm = new DefaultMutableTreeNode("Camino:"); // Inicializa el arbol
     }
     
     @Override
     public void run(){
         while(true){
-            int index = min(open);
+            int index = min(open);  //Encuentra el minimo entre los nodos abiertos(open)
             pt = open.get(index);
-            open.remove(index);
+            open.remove(index); // Remueve el nodo minimo de los nodos abiertos
+            /*
+            Esta parte del codigo se encarga de mostrar los movimientos
+            ********************************************************************
+            */
             JLabel jl = m.getEtiqueta(pt.y, pt.x, panel);
             if(jl.getText().contains(" ")){
                 jl.setText(jl.getText().replace(" ", "o"));
@@ -73,32 +82,44 @@ public class AEstrella extends Thread{
             }
             p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(pt.y).get(pt.x)));
             txtPuntos.setText(p.getPuntos()+"");
+            //******************************************************************
             DefaultMutableTreeNode padre=new DefaultMutableTreeNode();
+            // Busca si el nodo ya esta en el arbol*
             DefaultMutableTreeNode aux = arbolSearch(dm,new DefaultMutableTreeNode(pt.x+","+pt.y).getUserObject().toString());
             if (aux!=null){
-                padre=aux;
+                padre=aux;  // *Si esta lo asigna para modificarlo
             }else{
-                padre=new DefaultMutableTreeNode(pt.x+","+pt.y);
+                padre=new DefaultMutableTreeNode(pt.x+","+pt.y);    //SI no esta lo agrega
                 dm.add(padre);
             }
+            /*
+            Esta parte es la mas importante del algoritmo ya que permite agregar mas nodos a la lista de 
+            nodos abiertos, no sin antes validarlos, el algoritmo se basa en el menor f de esta lista, si
+            hay coincidencias se basa en el orden como esta el codigo: Arriba, Abajo, Derecha, Izquierda
+            */
             // Arriba
             if (pt.y>0){
                 Punto up = new Punto(pt.x,pt.y-1);
-                if (p.validar(m.getMap().get(up.y).get(up.x))==true){
-                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(up.x+","+up.y);
-                    padre.add(hijo);
-                    up.setF(p.getCostoOf(m.getMap().get(up.y).get(up.x))+distancia(up));
-                    if (up.x == fin.x && up.y == fin.y){
-                        closed.add(up);
-                        jl = m.getEtiqueta(up.y, up.x, panel);
-                        jl.setText(jl.getText()+"o");
-                        p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(up.y).get(up.x)));
+                if (p.validar(m.getMap().get(up.y).get(up.x))==true){   //  Valida el movimiento, si no se puede hacer lo ignora
+                    DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(up.x+","+up.y);    //Si se puede crea el nodo hijo
+                    padre.add(hijo);    //  asigna el ijo al padre
+                    up.setF(p.getCostoOf(m.getMap().get(up.y).get(up.x))+distancia(up));    //Calcula y asigna f
+                    if (up.x == fin.x && up.y == fin.y){    //Si es el punto final:
+                        closed.add(up); //Agrega este nodo a la lista de cerrados 
+                        jl = m.getEtiqueta(up.y, up.x, panel);  
+                        jl.setText(jl.getText()+"o");   //Marca como visitado
+                        p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(up.y).get(up.x)));    // Asigna puntos
                         txtPuntos.setText(p.getPuntos()+"");
-                        this.stop();
+                        try {
+                            recorrido();    //Manda llamar a la funcion que muestra el recorrido optimo
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(AEstrella.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        this.stop();// Detiene el hilo;
                     }else if(search(open,up)!=-1 || search(closed,up)!=-1){
                         // Do Nothing/Add Sentences
                     }else{
-                        open.add(up);
+                        open.add(up);// Agrega el nodo creado a la lista de nodos abiertos
                     }
                 }
             }
@@ -115,6 +136,11 @@ public class AEstrella extends Thread{
                         jl.setText(jl.getText()+"o");
                         p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(down.y).get(down.x)));
                         txtPuntos.setText(p.getPuntos()+"");
+                        try {
+                            recorrido();
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(AEstrella.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         this.stop();;
                     }else if(search(open,down)!=-1 || search(closed,down)!=-1){
                         // Do Nothing
@@ -136,6 +162,11 @@ public class AEstrella extends Thread{
                         jl.setText(jl.getText()+"o");
                         p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(right.y).get(right.x)));
                         txtPuntos.setText(p.getPuntos()+"");
+                        try {
+                            recorrido();
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(AEstrella.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         this.stop();
                     }else if(search(open,right)!=-1 || search(closed,right)!=-1){
                         // Do Nothing
@@ -157,6 +188,11 @@ public class AEstrella extends Thread{
                         jl.setText(jl.getText()+"o");
                         p.setPuntos(p.getPuntos()+p.getCostoOf(m.getMap().get(left.y).get(left.x)));
                         txtPuntos.setText(p.getPuntos()+"");
+                        try {
+                            recorrido();
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(AEstrella.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         this.stop();
                     }else if(search(open,left)!=-1 || search(closed,left)!=-1){
                         // Do Nothing
@@ -165,29 +201,38 @@ public class AEstrella extends Thread{
                     }
                 }
             }
-            closed.add(pt);
-            spArbol.removeAll();
+            closed.add(pt);//Agrega el nodo que se saco de abiertos a cerrados
+            spArbol.removeAll();    
             JTree arbol = new JTree(dm);
-            spArbol.add(arbol);
+            spArbol.add(arbol); //Refresca el ScrollPane que nos muestra el arbol
         }
     }
-        // Camino optimo
-        /*DefaultMutableTreeNode lastNode = arbolSearch(dm,fin.x+","+fin.y);
-        Enumeration e = lastNode.pathFromAncestorEnumeration(dm);
-        while(e.hasMoreElements()){
-            DefaultMutableTreeNode d = (DefaultMutableTreeNode)e.nextElement();
-            String aux = d.getUserObject().toString();
-            if (aux == "Camino:"){
-                // Do Nothing
-            }else{
-                int i=aux.indexOf(",");
-                int x = Integer.parseInt(aux.substring(0, i-1));
-                int y = Integer.parseInt(aux.substring(i+1, aux.length()-1));
-                JLabel jl = m.getEtiqueta(y, x, panel);
-                jl.setText(jl.getText().replace("o", "x"));
-                panel.updateUI();
-            }
-        }*/
+    
+    /* 
+    Muestra el camino optimo una vez que se reconocio el mapa, primero
+    agrega el camino optimo a un arraylist y despues lo muestra paso a paso 
+    recorriendo el arraylist desde el ultimo elemento hasta el primero
+    */
+    public void recorrido() throws InterruptedException{
+        ArrayList<String> camino = new ArrayList<String>();
+        DefaultMutableTreeNode aux = arbolSearch(dm,fin.x+","+fin.y);
+        int lim = aux.getLevel();
+        for (int j=0; j<lim; j++){
+            camino.add(aux.getUserObject().toString());
+            aux = (DefaultMutableTreeNode) aux.getParent();
+        }
+        for (int j=camino.size()-1; j>=0;j--){
+            String txt = camino.get(j);
+            int i=txt.indexOf(",");
+            int x = Integer.parseInt(txt.substring(0, i));
+            int y = Integer.parseInt(txt.substring(i+1, txt.length()));
+            System.out.println(txt + "-" + x+","+y);
+            JLabel jl = m.getEtiqueta(y, x, panel);
+            jl.setText(jl.getText().replace("o", "x"));
+            panel.updateUI();
+            Thread.sleep(500);
+        }
+    }
     
     public int min(ArrayList<Punto> al){
         int indice=-1;

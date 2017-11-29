@@ -1,10 +1,14 @@
 package Procesamiento;
 
 import java.util.ArrayList;
-
+/*
+********************************************************************************
+                PORT DE LA VERSION ANTERIOR CON LIGEROS CAMBIOS
+********************************************************************************
+*/
 public class Personaje {
     private static final int MAX_C = 20;    //Maximo costo de un movimiento
-    private int puntos;     // Se refiere al monto de puntos a gastar
+    private int puntos;     // Se refiere al monto de puntos gastados
     private int[] costo;    // Costo dependiendo del tipo de zona por personaje
     
     public Personaje(int[] costos){

@@ -38,7 +38,7 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() {
         initComponents();
-        btnAct.doClick();
+        btnAct.doClick();   // Actualiza el mapa al cargar el JFrame
     }
 
     /**
@@ -116,7 +116,12 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel2.setText("Personaje:");
 
-        cbLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona un personaje", "Humano", "Mono", "Pulpo", "Sasquatch" }));
+        cbLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Humano", "Mono", "Pulpo", "Sasquatch" }));
+        cbLista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbListaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -176,9 +181,12 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActActionPerformed
+        // Recarga el mapa
         m = new Mapa("filename.txt");
         panel.removeAll();
         pos = m.cargarMapa(panel);
+        spArbol.removeAll();
+        txtPuntos.setText("0");
     }//GEN-LAST:event_btnActActionPerformed
 
     private void panelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelMouseClicked
@@ -186,6 +194,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_panelMouseClicked
 
     private void cbEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbEditarActionPerformed
+        // Permite editar el mapa, deshabilita otros botones para evitar inconsistencias
         btnGuardar.setEnabled(true);
         cbEditar.setEnabled(false);
         btnAct.setEnabled(false);
@@ -193,6 +202,8 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_cbEditarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // Guarda el mapa en el archivo y vuelve a recargar el mapa desde el archivo
+        // deshabilita y habilita botones para evitar inconsistencias
         try {
             m.guardarMapa(panel);
         } catch (IOException ex) {
@@ -210,13 +221,23 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnResolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResolverActionPerformed
+        // Corre el algoritmo A* una vez que se seleccionaron punto inicial y final
+        // y el personaje a utilizar
         inicioFin();
         setPersonaje(cbLista.getSelectedItem().toString());
         AEstrella algoritmo = new AEstrella(ini,fin,p,m,txtPuntos,spArbol,panel);
         algoritmo.start();
-        //algoritmo.run();
     }//GEN-LAST:event_btnResolverActionPerformed
 
+    private void cbListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbListaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbListaActionPerformed
+
+    /*
+    Metodo que detecta el punto inicial y final recorriendo el panel por completo
+    la funcion se ve un poco rara por que el metodo getComponentAt de JPanel
+    causa errores (posiblemente por el GridLayout)
+    */
     public void inicioFin(){
         int col=m.getAr().getCol();
         int filas = m.getAr().getFilas();
@@ -241,6 +262,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }
     
+    /*
+    Metodo para inicializar al personaje seleccionado, el personaje por default 
+    es el humano como se puede apreciar en la interfaz grafica
+    */
     public void setPersonaje(String nombre){
         int[] costos=new int[5];
         if (nombre=="Humano"){

@@ -26,11 +26,19 @@ public class Mapa {
     private Archivo ar = new Archivo();
     private int edit = 0;
     private ArrayList<ArrayList<Integer>> map = new ArrayList<ArrayList<Integer>>();
+    /*
+    Arreglos  de colores y textos de los Jlabel para manejarlos con un indice
+    de esta forma es mas facil manejarlos y se optimiza el codigo al no necesitar 
+    validarlo
+    */
     private final String[] terreno={"Montaña","Tierra","Agua","Arena","Bosque"};
     private final Color[] background={new Color(77,58,58),new Color(250,191,143),new Color(0,175,255),Color.yellow,new Color(150,210,80)};
     boolean ini;
     boolean fin;
-
+    
+    /*
+    Getters y Seters
+    */
     public ArrayList<ArrayList<Integer>> getMap() {
         return map;
     }
@@ -55,13 +63,18 @@ public class Mapa {
         this.edit = edit;
     }
     
+    /*
+    Metodo para cargar el mapa a traves del archivo de texto, agrega la opcion
+    de carga de terreno a los JLabel, regresa un arreglo de JLabel que planeaba
+    usar pero a final de cuentas no se uso
+    */
     public JLabel[][] cargarMapa(JPanel mapa) {
         int filas = ar.getFilas();
         int col = ar.getCol();
         int con;
         ini=false;
         fin=false;
-        mapa.setLayout(new GridLayout(filas,col));
+        mapa.setLayout(new GridLayout(filas,col));  // columnas y flias de N*M
         JLabel[][] grid = new JLabel[filas][col];
         for (int i=0; i<filas; i++){
             for (int j=0; j<col; j++){
@@ -75,10 +88,11 @@ public class Mapa {
                 grid[i][j].setFont(new Font("Courier New",Font.PLAIN,21));
                 grid[i][j].addMouseListener(new MouseAdapter() {
                     @Override
-                    public void mouseClicked(java.awt.event.MouseEvent evt){
+                    public void mouseClicked(java.awt.event.MouseEvent evt){ // Evento click
                         JLabel jl = new JLabel();
                         jl = (JLabel) evt.getSource();
-                        if (edit==1){
+                        if (edit==1){   // se activa con checkbox Editar
+                            // Edicion libre del mapa
                             int indice=-1;
                             for (int i=0;i<background.length;i++){
                                 if (jl.getBackground()==background[i]){
@@ -93,6 +107,7 @@ public class Mapa {
                             jl.setBackground(background[indice]);
                             jl.setToolTipText(terreno[indice]);
                             mapa.updateUI();
+                            // Evento para seleccionar punto inicial y final 
                         } else if (fin==false && evt.isMetaDown()==true){
                             jl.setText("F");
                             fin = true;
@@ -111,6 +126,10 @@ public class Mapa {
         return grid;
     }
     
+    /*
+    Obtiene todos los elementos del panel para actualizar el arraylist
+    bidimensional, para posteriormente guardar el mapa en el archivo de texto
+    */
     public void guardarMapa(JPanel mapa) throws IOException{
         int filas = ar.getFilas();
         int col = ar.getCol();
@@ -139,6 +158,10 @@ public class Mapa {
         mapa.updateUI();
     }
     
+    /*
+    Recorre el panel para dar con el JLabel de la posicion x,y... no es la 
+    solucion mas optima pero funciona
+    */
     public JLabel getEtiqueta(int fila, int columna, JPanel mapa){
         int col=ar.getCol();
         JLabel jl = new JLabel();
