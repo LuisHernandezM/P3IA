@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -85,7 +86,8 @@ public class Mapa {
                 grid[i][j].setToolTipText(terreno[con]);
                 grid[i][j].setBackground(background[con]);
                 grid[i][j].setOpaque(true);
-                grid[i][j].setFont(new Font("Courier New",Font.PLAIN,21));
+                grid[i][j].setFont(new Font("Courier New",Font.BOLD,21));
+                grid[i][j].setHorizontalAlignment(SwingConstants.CENTER);
                 grid[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(java.awt.event.MouseEvent evt){ // Evento click
