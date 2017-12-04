@@ -247,7 +247,7 @@ public class AEstrella extends Thread{
     }
     
     public int distancia(Punto act){
-        return Math.abs(act.x-fin.x)+Math.abs(act.y+fin.y);
+        return Math.abs(act.x-fin.x)+Math.abs(act.y-fin.y);
     }
     
     public int search(ArrayList<Punto> lista, Punto p){
